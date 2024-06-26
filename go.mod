@@ -1,11 +1,12 @@
 module github.com/interuss/dss
 
-go 1.22.3
+go 1.18
 
 require (
 	cloud.google.com/go/profiler v0.4.0
 	github.com/cockroachdb/cockroach-go/v2 v2.3.8
 	github.com/coreos/go-semver v0.3.1
+	github.com/fluent/fluent-logger-golang v1.9.0
 	github.com/go-jose/go-jose/v4 v4.0.2
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang/geo v0.0.0-20230421003525-6adc56603217
@@ -23,6 +24,7 @@ require (
 	cloud.google.com/go v0.110.2 // indirect
 	cloud.google.com/go/compute v1.19.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -34,9 +36,10 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
+	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/stretchr/objx v0.5.2 // indirect
+	github.com/tinylib/msgp v1.1.9 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
