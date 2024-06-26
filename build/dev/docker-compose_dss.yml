@@ -2,8 +2,6 @@
 
 # To bring up this system, see standalone_instance.md.
 
-version: '3.8'
-
 services:
 
   local-dss-crdb:
@@ -49,6 +47,7 @@ services:
     build:
       context: ../..
       dockerfile: Dockerfile
+    restart: on-failure:3
     image: interuss-local/dss
     volumes:
       - $PWD/../test-certs:/var/test-certs:ro
@@ -61,8 +60,26 @@ services:
     depends_on:
       - local-dss-rid-bootstrapper
       - local-dss-scd-bootstrapper
+      - fluentd
     networks:
       - dss_sandbox_default_network 
+  fluentd:
+        container_name: dss-fluentd
+        restart: on-failure:3
+        build:
+            context: ../..
+            dockerfile: $PWD/fluent/Dockerfile
+        volumes:
+            - /var/lib/docker/containers:/fluentd/log/containers
+            - ./fluent/conf:/fluentd/etc
+            - ./logs:/output/
+        logging:
+            driver: "local"
+        ports:
+            - "24224:24224"
+            - "24224:24224/udp"
+        expose:
+            - "24224"
 
 networks:
   dss_sandbox_default_network:

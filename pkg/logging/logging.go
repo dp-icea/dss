@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/fluent/fluent-logger-golang/fluent"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -45,28 +46,39 @@ func setUpLogger(level string, format string) error {
 		return err
 	}
 
-	options := []zap.Option{
-		zap.AddCaller(), zap.AddStacktrace(zapcore.PanicLevel),
-	}
-
-	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeDuration = zapcore.StringDurationEncoder
-	encoderConfig.StacktraceKey = "stack"
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-
-	config := zap.NewProductionConfig()
-	config.Level = lvl
-	config.Encoding = format
-	config.EncoderConfig = encoderConfig
-
-	l, err := config.Build(options...)
-	if err != nil {
-		return err
-	}
+	l := zap.New(configureCore())
 
 	Logger = l
 
 	return nil
+}
+
+func configureCore() zapcore.Core {
+	//TODO: use env variables for fluent config
+	fluentLogger, err := fluent.New(fluent.Config{
+		FluentHost: "172.17.0.1",
+		FluentPort: 24224,
+	})
+
+	//TODO: refactor this to expected error and descriptive message
+	if err != nil {
+		panic(err)
+	}
+
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeDuration = zapcore.StringDurationEncoder
+	config.StacktraceKey = "stack"
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+
+	fw := &FluentWriter{fluentLogger}
+
+	fluentdEncoder := zapcore.NewJSONEncoder(config)
+	consoleEncoder := zapcore.NewConsoleEncoder(config)
+
+	return zapcore.NewTee(
+		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
+		zapcore.NewCore(fluentdEncoder, zapcore.AddSync(fw), zapcore.DebugLevel),
+	)
 }
 
 // Configure configures the default log "level" and the log "format".
