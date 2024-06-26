@@ -33,4 +33,4 @@ elif [[ "$DC_COMMAND" == "debug" ]]; then
 fi
 
 # shellcheck disable=SC2086
-docker compose -f docker-compose_dss.yaml -p dss_sandbox $DC_COMMAND $DC_OPTIONS
+docker compose -f docker-compose_dss.yml -p dss_sandbox $DC_COMMAND $DC_OPTIONS
