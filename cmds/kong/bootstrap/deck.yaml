@@ -16,6 +16,13 @@ services:
     paths:
     - /token
     plugins:
+    - name: http-log
+      config:
+        http_endpoint: http://localhost:9880/
+        method: POST
+        timeout: 1000
+        keepalive: 1000
+        flush_timeout: 2
     - config:
         anonymous: null
         hide_credentials: true
