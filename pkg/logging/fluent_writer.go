@@ -8,14 +8,17 @@ type FluentWriter struct {
 	*fluent.Fluent
 }
 
+const (
+	ERROR_DEFAULT_VALUE int = 0
+)
+
 func (fw *FluentWriter) Write(p []byte) (n int, err error) {
-	//TODO: use tag from env file
+	//TODO: use tag from env file in the future
 	msg := map[string]string{"msg": string(p)}
 	err = fw.Post("dss.logs", msg)
 
-	//TODO: implement descriptive message for when post is not successful
 	if err != nil {
-		return 0, err
+		return ERROR_DEFAULT_VALUE, err
 	}
 	return len(p), nil
 }
