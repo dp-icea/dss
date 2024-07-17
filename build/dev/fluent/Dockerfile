@@ -10,4 +10,6 @@ RUN apk add --no-cache --update --virtual .build-deps \
 RUN gem install fluent-plugin-opensearch
 
 RUN mkdir -p $(pwd)/output && chmod 777 $(pwd)/output
+
 EXPOSE 24224
+EXPOSE 9880 
