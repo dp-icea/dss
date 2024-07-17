@@ -1,4 +1,31 @@
 _format_version: "3.0"
+plugins:
+- config:
+    content_type: application/json
+    custom_fields_by_lua: null
+    flush_timeout: 2
+    headers: null
+    http_endpoint: http://172.22.0.1:9880/kong.logs
+    keepalive: 1000
+    method: POST
+    queue:
+      initial_retry_delay: 0.01
+      max_batch_size: 1
+      max_bytes: null
+      max_coalescing_delay: 1
+      max_entries: 10000
+      max_retry_delay: 60
+      max_retry_time: 60
+    queue_size: null
+    retry_count: 15
+    timeout: 1000
+  enabled: true
+  name: http-log
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
 services:
 - connect_timeout: 60000
   enabled: true
@@ -16,13 +43,6 @@ services:
     paths:
     - /token
     plugins:
-    - name: http-log
-      config:
-        http_endpoint: http://localhost:9880/
-        method: POST
-        timeout: 1000
-        keepalive: 1000
-        flush_timeout: 2
     - config:
         anonymous: null
         hide_credentials: true
