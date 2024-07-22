@@ -5,7 +5,7 @@ plugins:
     custom_fields_by_lua: null
     flush_timeout: 2
     headers: null
-    http_endpoint: http://172.22.0.1:9880/kong.logs
+    http_endpoint: http://172.17.0.1:9880/kong.logs
     keepalive: 1000
     method: POST
     queue:
