@@ -68,11 +68,10 @@ services:
         restart: on-failure:3
         build:
             context: ../..
-            dockerfile: $PWD/fluent/Dockerfile
+            dockerfile: $PWD/../../cmds/fluent/Dockerfile
         volumes:
             - /var/lib/docker/containers:/fluentd/log/containers
-            - ./fluent/conf:/fluentd/etc
-            - ./logs:/output/
+            - $PWD/../../cmds/fluent/conf:/fluentd/etc
         logging:
             driver: "local"
         ports:
