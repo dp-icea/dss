@@ -26,6 +26,22 @@ plugins:
   - grpcs
   - http
   - https
+- config:
+    access:
+    - kong.log.set_serialize_value('request.body', kong.request.get_raw_body())
+    body_filter:
+    - kong.log.set_serialize_value('response.body', kong.response.get_raw_body())
+    certificate: []
+    header_filter: []
+    log: []
+    rewrite: []
+  enabled: true
+  name: pre-function
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
 services:
 - connect_timeout: 60000
   enabled: true
