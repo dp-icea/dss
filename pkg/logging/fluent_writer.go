@@ -13,7 +13,6 @@ const (
 )
 
 func (fw *FluentWriter) Write(p []byte) (n int, err error) {
-	//TODO: use tag from env file in the future
 	msg := map[string]string{"msg": string(p)}
 	err = fw.Post("dss.logs", msg)
 

@@ -25,6 +25,8 @@ var (
 //TODO: Implement constant file for error messages
 const (
 	FLUENTD_CONNECTION_FAILED_ERROR_MSG string = "Failed to connect to Fluentd instance"
+	FLUENTD_HOST                        string = "172.17.0.1"
+	FLUENTD_PORT                        string = "24224"
 )
 
 func init() {
@@ -61,8 +63,8 @@ func setUpLogger(level string, format string) error {
 func configureCore() zapcore.Core {
 	//TODO: use env variables in the future
 	fluentLogger, err := fluent.New(fluent.Config{
-		FluentHost: "172.17.0.1",
-		FluentPort: 24224,
+		FluentHost: FLUENTD_HOST,
+		FluentPort: FLUENTD_PORT,
 	})
 
 	if err != nil {
