@@ -28,7 +28,6 @@ else
   -log_format console \
   -dump_requests \
   -addr :8082 \
-  -enableFluent true \
   -accepted_jwt_audiences localhost,host.docker.internal,local-dss-core-service,dss_sandbox-local-dss-core-service-1,core-service \
   -enable_scd \
   -enable_http
