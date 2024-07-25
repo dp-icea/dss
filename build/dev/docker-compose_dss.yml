@@ -60,27 +60,8 @@ services:
     depends_on:
       - local-dss-rid-bootstrapper
       - local-dss-scd-bootstrapper
-      - fluentd
     networks:
-      - dss_sandbox_default_network 
-  fluentd:
-        container_name: dss-fluentd
-        restart: on-failure:3
-        build:
-            context: ../..
-            dockerfile: $PWD/../../cmds/fluent/Dockerfile
-        volumes:
-            - /var/lib/docker/containers:/fluentd/log/containers
-            - $PWD/../../cmds/fluent/conf:/fluentd/etc
-        logging:
-            driver: "local"
-        ports:
-            - "24224:24224"
-            - "24224:24224/udp"
-            - "9880:9880"
-        expose:
-            - "24224"
-            - "9880" 
+      - dss_sandbox_default_network  
 
 networks:
   dss_sandbox_default_network:
