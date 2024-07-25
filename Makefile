@@ -170,6 +170,6 @@ konga:
 kong-reset-db:
 	sudo rm -rf kong_postgres_data
 
-.PHONY: opensearch
-opensearch:
-	docker-compose -f  $(CURDIR)/cmds/opensearch/docker-compose.yml up --build -d
+.PHONY: logs-service
+logs-service:
+	docker compose -f  ./docker-compose-logs.yml up --build -d
