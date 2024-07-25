@@ -44,6 +44,7 @@ var (
 
 	logFormat            = flag.String("log_format", logging.DefaultFormat, "The log format in {json, console}")
 	logLevel             = flag.String("log_level", logging.DefaultLevel.String(), "The log level")
+	enableFluent         = flag.Bool("enableFluent", false, "Enables fluent log forwarding for API")
 	dumpRequests         = flag.Bool("dump_requests", false, "Log HTTP request and response")
 	profServiceName      = flag.String("gcp_prof_service_name", "", "Service name for the Go profiler")
 	garbageCollectorSpec = flag.String("garbage_collector_spec", "@every 30m", "Garbage collector schedule. The value must follow robfig/cron format. See https://godoc.org/github.com/robfig/cron#hdr-Usage for more detail.")
@@ -340,7 +341,7 @@ func (gcj RIDGarbageCollectorJob) Run() {
 
 func main() {
 	flag.Parse()
-	if err := logging.Configure(*logLevel, *logFormat); err != nil {
+	if err := logging.Configure(*logLevel, *logFormat, *enableFluent); err != nil {
 		panic(fmt.Sprintf("Failed to configure logging: %s", err.Error()))
 	}
 
