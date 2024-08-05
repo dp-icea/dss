@@ -1,2 +1,2 @@
 FROM kong/deck
-COPY deck.yml /kong.yml
+COPY deck.yml /kong.yaml
