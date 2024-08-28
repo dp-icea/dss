@@ -1,18 +1,22 @@
 services:
-    opensearch-node1: 
+    opensearch-node1:
         image: opensearchproject/opensearch:latest
         container_name: opensearch-node1
         environment:
-            - cluster.name=opensearch-cluster 
+            - cluster.name=opensearch-cluster
             - node.name=opensearch-node1
-            - discovery.seed_hosts=opensearch-node1,opensearch-node2 
-            - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2 
+            - discovery.seed_hosts=opensearch-node1,opensearch-node2
+            - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
             - bootstrap.memory_lock=true
-            - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" 
-            - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Br@UTM2024 
+            - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+            - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Br@UTM2024
             - plugins.security.ssl.http.enabled=false
         healthcheck:
-            test: ["CMD-SHELL", "curl -ku admin:Br@UTM2024  --silent --fail http://172.17.0.1:9200/_cluster/health || exit 1"]
+            test:
+                [
+                    "CMD-SHELL",
+                    "curl -ku admin:Br@UTM2024  --silent --fail http://172.17.0.1:9200/_cluster/health || exit 1",
+                ]
             interval: 30s
             timeout: 30s
             retries: 3
@@ -21,19 +25,19 @@ services:
                 soft: -1
                 hard: -1
             nofile:
-                soft: 65536 
+                soft: 65536
                 hard: 65536
         volumes:
-            - opensearch-data1:/usr/share/opensearch/data 
+            - opensearch-data1:/usr/share/opensearch/data
         ports:
-            - 9200:9200 
+            - 9200:9200
             - 9600:9600
         expose:
             - "9200"
         networks:
-            - opensearch-net 
+            - opensearch-net
     opensearch-node2:
-        image: opensearchproject/opensearch:latest 
+        image: opensearchproject/opensearch:latest
         container_name: opensearch-node2
         environment:
             - cluster.name=opensearch-cluster
@@ -42,7 +46,7 @@ services:
             - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
             - bootstrap.memory_lock=true
             - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-            - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Br@UTM2024 
+            - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Br@UTM2024
             - plugins.security.ssl.http.enabled=false
         ulimits:
             memlock:
@@ -56,14 +60,14 @@ services:
         networks:
             - opensearch-net
     opensearch-dashboards:
-        image: opensearchproject/opensearch-dashboards:latest 
+        image: opensearchproject/opensearch-dashboards:latest
         container_name: opensearch-dashboards
         ports:
-            - 5601:5601 
+            - 5601:5601
         expose:
             - "5601"
         environment:
-            OPENSEARCH_HOSTS: '["http://opensearch-node1:9200","http://opensearch-node2:9200"]' 
+            OPENSEARCH_HOSTS: '["http://opensearch-node1:9200","http://opensearch-node2:9200"]'
         networks:
             - opensearch-net
     fluentd:
@@ -82,7 +86,6 @@ services:
                 condition: service_healthy
         ports:
             - "24224:24224"
-           # - "24224:24224/udp"
             - "9880:9880"
         expose:
             - "24224"
