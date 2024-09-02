@@ -11,6 +11,7 @@ services:
             - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
             - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Br@UTM2024
             - plugins.security.ssl.http.enabled=false
+            - plugins.ml_commons.only_run_on_ml_node=false
         healthcheck:
             test:
                 [
@@ -48,6 +49,7 @@ services:
             - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
             - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Br@UTM2024
             - plugins.security.ssl.http.enabled=false
+            - plugins.ml_commons.only_run_on_ml_node=false
         ulimits:
             memlock:
                 soft: -1
