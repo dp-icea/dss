@@ -22,7 +22,7 @@ go run ./cmds/core-service \
   -dump_requests \
   -accepted_jwt_audiences localhost \
   -enable_scd \
-  -enable_http
+  -allow_http_base_urls
 ```
 
 ### Prerequisites
@@ -32,7 +32,7 @@ go run ./cmds/core-service \
 To run correctly, core-service must be able to [access](../../pkg/cockroach/flags/flags.go) a CockroachDB cluster.  Provision of this cluster is handled automatically for a local development environment if following [the instructions for a standalone instance](../../build/dev/standalone_instance.md).  Or, a CockroachDB instance can be created manually with:
 
 ```bash
-docker container run -p 26257:26257 -p 8080:8080 --rm cockroachdb/cockroach:v21.2.7 start-single-node --insecure
+docker container run -p 26257:26257 -p 8080:8080 --rm cockroachdb/cockroach:v24.1.3 start-single-node --insecure
 ```
 
 #### Database configuration
@@ -41,11 +41,11 @@ Once an initialized CockroachDB cluster is available, the necessary databases wi
 
 ```bash
 go run ./cmds/db-manager \
-  --schemas_dir ./build/deploy/db_schemas/rid \
+  --schemas_dir ./build/db_schemas/rid \
   --db_version latest \
   --cockroach_host localhost
 go run ./cmds/db-manager \
-  --schemas_dir ./build/deploy/db_schemas/scd \
+  --schemas_dir ./build/db_schemas/scd \
   --db_version latest \
   --cockroach_host localhost
 ```
