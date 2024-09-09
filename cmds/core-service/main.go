@@ -156,11 +156,11 @@ func createRIDServer(ctx context.Context, locality string, logger *zap.Logger) (
 
 	app := application.NewFromTransactor(ridStore, logger)
 	return &rid_v2.Server{
-		App:        app,
-		Timeout:    *timeout,
-		Locality:   locality,
-		EnableHTTP: *enableHTTP,
-		Cron:       ridCron,
+		App:               app,
+		Timeout:           *timeout,
+		Locality:          locality,
+		AllowHTTPBaseUrls: *allowHTTPBaseUrls,
+		Cron:              ridCron,
 	}, nil
 }
 
