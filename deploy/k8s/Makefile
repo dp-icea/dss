@@ -20,6 +20,13 @@ start-k8s-dashboard:
 	helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
 	kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
 
+.PHONY: start-k8s-helm-dashboard
+start-k8s-helm-dashboard:
+	helm plugin install https://github.com/komodorio/helm-dashboard.git
+	helm plugin update dashboard
+	helm dashboard
+
+
 .PHONY: stop-k8s-cluster
 stop-k8s-cluster:
 	kubectl delete serviceaccount brutm -n development
