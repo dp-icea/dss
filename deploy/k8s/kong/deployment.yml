@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-gateway
+  namespace: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong-gateway
+  template:
+    metadata:
+      labels:
+        app: kong-gateway
+    spec:
+      containers:
+        - name: kong-gateway
+          image: brutm/kong:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: KONG_DATABASE
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_DATABASE
+            - name: KONG_PG_HOST
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PG_HOST
+            - name: KONG_PG_USER
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PG_USER
+            - name: KONG_PG_PASSWORD
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PG_PASSWORD
+            - name: KONG_PROXY_ACCESS_LOG
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PROXY_ACCESS_LOG
+            - name: KONG_ADMIN_ACCESS_LOG
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_ADMIN_ACCESS_LOG
+            - name: KONG_PROXY_ERROR_LOG
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PROXY_ERROR_LOG
+            - name: KONG_ADMIN_ERROR_LOG
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_ADMIN_ERROR_LOG
+            - name: KONG_ADMIN_LISTEN
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_ADMIN_LISTEN
+            - name: KONG_ADMIN_GUI_URL
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_ADMIN_GUI_URL
+            - name: KONG_PLUGINS
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PLUGINS
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-db
+  namespace: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong-db
+  template:
+    metadata:
+      labels:
+        app: kong-db
+    spec:
+      containers:
+        - name: kong-db
+          image: postgres:13
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: KONG_DATABASE
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_DATABASE
+            - name: KONG_PG_HOST
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PG_HOST
+            - name: KONG_PG_USER
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PG_USER
+            - name: KONG_PG_PASSWORD
+              valueFrom:
+                  secretKeyRef:
+                    name: kong-gateway-secrets
+                    key: KONG_PG_PASSWORD
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            
