@@ -172,7 +172,3 @@ konga:
 .PHONY: kong-reset-db
 kong-reset-db:
 	sudo rm -rf kong_postgres_data
-
-.PHONY: logs-service
-logs-service:
-	docker compose -f  ./docker-compose-logs.yml up --build -d

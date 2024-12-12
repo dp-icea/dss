@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 
-	"github.com/fluent/fluent-logger-golang/fluent"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -22,13 +21,6 @@ var (
 	Logger *zap.Logger
 )
 
-//TODO: Implement service for env variables definition using flags
-const (
-	FLUENTD_CONNECTION_FAILED_ERROR_MSG string = "Failed to connect to Fluentd instance"
-	FLUENTD_HOST                        string = "172.17.0.1"
-	FLUENTD_PORT                        int    = 24224
-)
-
 func init() {
 	var (
 		format = "json"
@@ -42,67 +34,44 @@ func init() {
 		format = v
 	}
 
-	if err := setUpLogger(level, format, false); err != nil {
+	if err := setUpLogger(level, format); err != nil {
 		panic(err)
 	}
 }
 
-func setUpLogger(level string, format string, isFluentEnabled bool) error {
+func setUpLogger(level string, format string) error {
 	lvl := DefaultLevel
 	if err := lvl.UnmarshalText([]byte(level)); err != nil {
 		return err
 	}
 
-	l := zap.New(configureCore(isFluentEnabled))
+	options := []zap.Option{
+		zap.AddCaller(), zap.AddStacktrace(zapcore.PanicLevel),
+	}
+
+	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig.EncodeDuration = zapcore.StringDurationEncoder
+	encoderConfig.StacktraceKey = "stack"
+	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+
+	config := zap.NewProductionConfig()
+	config.Level = lvl
+	config.Encoding = format
+	config.EncoderConfig = encoderConfig
+
+	l, err := config.Build(options...)
+	if err != nil {
+		return err
+	}
 
 	Logger = l
 
 	return nil
 }
 
-func configureCore(isFluentEnabled bool) zapcore.Core {
-	defaultConfig := generateEncoderDefaultConfig()
-	consoleEncoder := zapcore.NewConsoleEncoder(defaultConfig)
-
-	if isFluentEnabled {
-		fluentCore := configureFluentCore(defaultConfig)
-		return zapcore.NewTee(
-			zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
-			fluentCore,
-		)
-	}
-
-	return zapcore.NewTee(
-		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
-	)
-}
-func generateEncoderDefaultConfig() zapcore.EncoderConfig {
-	config := zap.NewProductionEncoderConfig()
-	config.EncodeDuration = zapcore.StringDurationEncoder
-	config.StacktraceKey = "stack"
-	config.EncodeTime = zapcore.ISO8601TimeEncoder
-
-	return config
-}
-
-func configureFluentCore(defaultConfig zapcore.EncoderConfig) zapcore.Core {
-	fluentLogger, err := fluent.New(fluent.Config{
-		FluentHost: FLUENTD_HOST,
-		FluentPort: FLUENTD_PORT,
-	})
-
-	if err != nil {
-		panic(FLUENTD_CONNECTION_FAILED_ERROR_MSG)
-	}
-
-	fw := &FluentWriter{fluentLogger}
-	fluentdEncoder := zapcore.NewJSONEncoder(defaultConfig)
-	return zapcore.NewCore(fluentdEncoder, zapcore.AddSync(fw), zapcore.DebugLevel)
-}
-
 // Configure configures the default log "level" and the log "format".
-func Configure(level string, format string, isFluentEnabled bool) error {
-	return setUpLogger(level, format, isFluentEnabled)
+func Configure(level string, format string) error {
+	return setUpLogger(level, format)
 }
 
 // WithValuesFromContext augments logger with relevant fields from ctx and returns
