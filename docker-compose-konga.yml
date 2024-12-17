@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   konga-database:
-    container_name: konga_db
+    container_name: konga_database
     image: mongo:4.4-focal
     volumes:
       - ./konga_mongo_data:/data/db
