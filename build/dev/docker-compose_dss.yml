@@ -3,13 +3,12 @@
 # To bring up this system, see standalone_instance.md.
 
 services:
-
   local-dss-crdb:
     image: cockroachdb/cockroach:v21.2.7
     command: start-single-node --insecure
     ports:
-      - "26257:26257"
-      - "8080:8080"
+      - '26257:26257'
+      - '8080:8080'
     restart: always
     networks:
       - dss_sandbox_default_network
@@ -53,14 +52,18 @@ services:
       - local-dss-data:/var/local-dss-data
       - $PWD/startup:/startup:ro
     command: /startup/core_service.sh ${DEBUG_ON:-0}
+    logging:
+      driver: fluentd
+      options:
+        tag: dss-api
     ports:
-      - "4000:4000"
-      - "8082:8082"
+      - '4000:4000'
+      - '8082:8082'
     depends_on:
       - local-dss-rid-bootstrapper
       - local-dss-scd-bootstrapper
     networks:
-      - dss_sandbox_default_network  
+      - dss_sandbox_default_network
 
 networks:
   dss_sandbox_default_network:
