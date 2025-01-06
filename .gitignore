@@ -132,4 +132,3 @@ go
 
 # terraform
 .terraform*
-konga_mongo_data/
