@@ -197,6 +197,22 @@ func createSCDServer(ctx context.Context, logger *zap.Logger) (*scd.Server, erro
 	}, nil
 }
 
+// corsMiddleware handles CORS headers and preflight requests.
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 // RunHTTPServer starts the DSS HTTP server.
 func RunHTTPServer(ctx context.Context, ctxCanceler func(), address, locality string) error {
 	logger := logging.WithValuesFromContext(ctx, logging.Logger).With(zap.String("address", address))
@@ -259,10 +275,10 @@ func RunHTTPServer(ctx context.Context, ctxCanceler func(), address, locality st
 		multiRouter.Routers = append(multiRouter.Routers, &scdV1Router)
 	}
 
-	handler := logging.HTTPMiddleware(logger, *dumpRequests,
+	handler := corsMiddleware(logging.HTTPMiddleware(logger, *dumpRequests,
 		healthyEndpointMiddleware(logger,
 			&multiRouter,
-		))
+		)))
 
 	httpServer := &http.Server{
 		Addr:              address,
