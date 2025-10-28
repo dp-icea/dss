@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/profiler"
+	"github.com/go-resty/resty/v2"
 	"github.com/interuss/dss/pkg/api"
 	apiauxv1 "github.com/interuss/dss/pkg/api/auxv1"
 	apiridv2 "github.com/interuss/dss/pkg/api/ridv2"
@@ -24,6 +25,7 @@ import (
 	"github.com/interuss/dss/pkg/build"
 	"github.com/interuss/dss/pkg/cockroach"
 	"github.com/interuss/dss/pkg/cockroach/flags" // Force command line flag registration
+	"github.com/interuss/dss/pkg/event"
 	"github.com/interuss/dss/pkg/logging"
 	"github.com/interuss/dss/pkg/rid/application"
 	rid_v2 "github.com/interuss/dss/pkg/rid/server/v2"
@@ -259,10 +261,12 @@ func RunHTTPServer(ctx context.Context, ctxCanceler func(), address, locality st
 		multiRouter.Routers = append(multiRouter.Routers, &scdV1Router)
 	}
 
+	ew := eventStoreMiddleware()
+
 	handler := logging.HTTPMiddleware(logger, *dumpRequests,
 		healthyEndpointMiddleware(logger,
 			&multiRouter,
-		))
+		), ew)
 
 	httpServer := &http.Server{
 		Addr:              address,
@@ -322,6 +326,13 @@ func healthyEndpointMiddleware(logger *zap.Logger, next http.Handler) http.Handl
 			next.ServeHTTP(w, r)
 		}
 	})
+}
+
+func eventStoreMiddleware() *event.EventWriter {
+	cli := resty.New()
+	ew := event.NewEventWriter(cli)
+	ew.ConfigEventWriter("http://172.19.0.5:8003")
+	return ew
 }
 
 type RIDGarbageCollectorJob struct {

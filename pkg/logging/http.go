@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/interuss/dss/pkg/event"
 	"go.uber.org/zap"
 )
 
@@ -41,7 +42,7 @@ func (w *tracingResponseWriter) WriteHeader(statusCode int) {
 
 // HTTPMiddleware installs a logging http.Handler that logs requests and
 // selected aspects of responses to 'logger'.
-func HTTPMiddleware(logger *zap.Logger, dump bool, handler http.Handler) http.Handler {
+func HTTPMiddleware(logger *zap.Logger, dump bool, handler http.Handler, ew *event.EventWriter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var (
 			logger = logger
@@ -52,6 +53,8 @@ func HTTPMiddleware(logger *zap.Logger, dump bool, handler http.Handler) http.Ha
 				next:     w,
 			}
 		)
+
+		DispatchEvent(r, ew)
 
 		if dump {
 			// dump request in logs
@@ -91,4 +94,11 @@ func HTTPMiddleware(logger *zap.Logger, dump bool, handler http.Handler) http.Ha
 			zap.Duration("duration", time.Since(start)),
 		)
 	})
+}
+
+func DispatchEvent(r *http.Request, ew *event.EventWriter) {
+	correlationId := r.Header.Values("Correlation_id")[0]
+	stream := r.URL.Path
+	event := event.NewEvent(correlationId, stream, "1")
+	ew.Create(event)
 }
